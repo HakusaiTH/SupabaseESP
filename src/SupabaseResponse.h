@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SUPABASE_RESPONSE_H
 #define SUPABASE_RESPONSE_H
 

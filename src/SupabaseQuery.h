@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SUPABASE_QUERY_H
 #define SUPABASE_QUERY_H
 

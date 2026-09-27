@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SUPABASE_STORAGE_H
 #define SUPABASE_STORAGE_H
 

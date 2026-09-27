@@ -1,35 +1,31 @@
-#######################################
-# Syntax Highlighting Table For SupabaseESP
-#######################################
-
-#######################################
-# Datatypes (KEYWORD1)
-#######################################
-
+Supabase	KEYWORD1
 SupabaseESP	KEYWORD1
 SupabaseDatabase	KEYWORD1
 SupabaseQuery	KEYWORD1
 SupabaseAuth	KEYWORD1
 SupabaseStorage	KEYWORD1
-SupabaseStorageBucket	KEYWORD1
 SupabaseRealtime	KEYWORD1
-SupabaseRealtimeChannel	KEYWORD1
 SupabaseResponse	KEYWORD1
-SupabaseSession	KEYWORD1
-SupabaseErrorCode	KEYWORD1
-
-#######################################
-# Methods and Functions (KEYWORD2)
-#######################################
 
 begin	KEYWORD2
-from	KEYWORD2
 select	KEYWORD2
 insert	KEYWORD2
 update	KEYWORD2
-upsert	KEYWORD2
 remove	KEYWORD2
+signUp	KEYWORD2
+signIn	KEYWORD2
+signOut	KEYWORD2
+connected	KEYWORD2
+wifiConnected	KEYWORD2
+lastError	KEYWORD2
+lastErrorMessage	KEYWORD2
+lastStatusCode	KEYWORD2
+from	KEYWORD2
 rpc	KEYWORD2
+db	KEYWORD2
+auth	KEYWORD2
+storage	KEYWORD2
+realtime	KEYWORD2
 eq	KEYWORD2
 neq	KEYWORD2
 gt	KEYWORD2
@@ -44,39 +40,6 @@ order	KEYWORD2
 limit	KEYWORD2
 range	KEYWORD2
 single	KEYWORD2
-maybeSingle	KEYWORD2
-signUp	KEYWORD2
-signIn	KEYWORD2
-signInWithPassword	KEYWORD2
-refreshSession	KEYWORD2
-getUser	KEYWORD2
-signOut	KEYWORD2
-upload	KEYWORD2
-download	KEYWORD2
-downloadText	KEYWORD2
-list	KEYWORD2
-publicUrl	KEYWORD2
-createSignedUrl	KEYWORD2
-createSignedUploadUrl	KEYWORD2
-channel	KEYWORD2
-join	KEYWORD2
-leave	KEYWORD2
-sendBroadcast	KEYWORD2
-onBroadcast	KEYWORD2
-onPostgresChange	KEYWORD2
-track	KEYWORD2
-enablePresence	KEYWORD2
-loop	KEYWORD2
-execute	KEYWORD2
-ok	KEYWORD2
-statusCode	KEYWORD2
-body	KEYWORD2
-errorMessage	KEYWORD2
-errorCode	KEYWORD2
-
-#######################################
-# Constants (LITERAL1)
-#######################################
 
 SupabaseErrorCode::NONE	LITERAL1
 SupabaseErrorCode::INVALID_CONFIG	LITERAL1

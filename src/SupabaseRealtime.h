@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SUPABASE_REALTIME_H
 #define SUPABASE_REALTIME_H
 

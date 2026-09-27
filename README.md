@@ -1,71 +1,89 @@
-<p align="center">
-  <img src="https://i.ibb.co/0jX77HjM/Chat-GPT-Image-28-2569-00-15-48.png" alt="SupabaseESP Logo" width="350"/>
-</p>
-
 # SupabaseESP
 
-> A production-oriented Supabase client library for ESP32 / ESP32-S3 / ESP32-C3 microcontrollers using the Arduino framework.
+A lightweight Supabase client library for ESP32 and Arduino.
 
 ---
 
 ## ⚡ Overview
 
-**SupabaseESP** brings the power of Supabase Database REST, Auth, Storage, RPC, and Realtime WebSockets to embedded C++ on ESP32 microcontrollers. Designed specifically for memory-constrained hardware, `SupabaseESP` uses dynamic stream allocations, non-blocking real-time heartbeats, and predictable error handling.
+**SupabaseESP** provides a simple, clean, and beginner-friendly C++ API for connecting ESP32 microcontrollers to Supabase services including Database REST API, Authentication, Storage, RPC, and Realtime WebSockets.
 
 ---
 
-## 💻 Supported Boards & Core
-- ESP32 DevKit v1 / ESP32-WROOM-32
-- ESP32-S3
-- ESP32-C3 / ESP32-C6
-- ESP32 Arduino Core 2.x & 3.x
+## ✨ Features
+
+- **WiFi Auto-Connect & Initialization:** Single `begin(...)` call handles WiFi connection and Supabase setup.
+- **Simple Database REST Operations:** Easy `select()`, `insert()`, `update()`, and `remove()` methods.
+- **Fluent Query Builder:** Chain filters (`eq`, `gte`, `order`, `limit`, etc.) for advanced PostgREST queries.
+- **Authentication:** Built-in support for `signUp()`, `signIn()`, and `signOut()`.
+- **Error Handling:** Explicit error codes, HTTP status tracking, and debugging messages (`lastErrorMessage()`).
+- **Connection Diagnostics:** `connected()` and `wifiConnected()` helpers.
+- **Memory Efficient:** Native `WiFiClientSecure` HTTPS stream handling designed for ESP32 RAM bounds.
 
 ---
 
-## 📦 Dependencies
-- **ArduinoJson** (>= 6.x / 7.x)
-- **WebSockets** (by Markus Sattler - for Realtime WebSocket support)
+## 💻 Supported ESP32 Boards
+
+- **ESP32** (DevKit v1, WROOM, WROVER)
+- **ESP32-S2**
+- **ESP32-S3**
+- **ESP32-C3**
+- **ESP32-C6**
+
+---
+
+## 📋 Requirements
+
+- **Arduino Core for ESP32** (v2.0.0 or higher)
+- **ArduinoJson** (v6.x or v7.x)
+- **WebSockets** (by Markus Sattler - required for Realtime features)
+
+---
+
+## 📦 Installation
+
+### Arduino Library Manager Installation
+
+1. Open Arduino IDE.
+2. Navigate to **Tools** → **Manage Libraries...** (or press `Ctrl+Shift+I` / `Cmd+Shift+I`).
+3. Search for **SupabaseESP**.
+4. Click **Install**.
+
+### Manual GitHub Installation
+
+1. Download the repository as a `.zip` file from [GitHub](https://github.com/HakusaiTH/SupabaseESP).
+2. In Arduino IDE, go to **Sketch** → **Include Library** → **Add .ZIP Library...**
+3. Select the downloaded `.zip` file.
 
 ---
 
 ## 🚀 Quick Start
 
 ```cpp
-#include <WiFi.h>
 #include <SupabaseESP.h>
 
-#define WIFI_SSID "YOUR_WIFI_SSID"
-#define WIFI_PASS "YOUR_WIFI_PASS"
-
-#define SUPABASE_URL "https://your-project.supabase.co"
-#define SUPABASE_KEY "sb_publishable_xxxxxxxxx"
-
 SupabaseESP supabase;
+
+const char* WIFI_SSID = "YOUR_WIFI";
+const char* WIFI_PASSWORD = "YOUR_PASSWORD";
+
+const char* SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
+const char* SUPABASE_KEY = "YOUR_ANON_KEY";
 
 void setup() {
     Serial.begin(115200);
 
-    WiFi.begin(WIFI_SSID, WIFI_PASS);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(250);
-        Serial.print(".");
-    }
-
-    supabase.begin(SUPABASE_URL, SUPABASE_KEY);
-
-    // Insert telemetry data into 'telemetry' table
-    JsonDocument row;
-    row["device_id"] = "ESP32-001";
-    row["temperature"] = 28.5;
-    row["humidity"] = 61.2;
-
-    auto result = supabase.from("telemetry").insert(row).execute();
-
-    if (result.ok()) {
-        Serial.println("Telemetry uploaded successfully!");
+    // Connect to WiFi & initialize Supabase
+    if (supabase.begin(WIFI_SSID, WIFI_PASSWORD, SUPABASE_URL, SUPABASE_KEY)) {
+        Serial.println("Supabase ready!");
     } else {
-        Serial.printf("Error %d: %s\n", result.statusCode(), result.errorMessage().c_str());
+        Serial.print("Initialization failed: ");
+        Serial.println(supabase.lastErrorMessage());
     }
+
+    // Query 'devices' table
+    String result = supabase.select("devices");
+    Serial.println(result);
 }
 
 void loop() {
@@ -74,16 +92,64 @@ void loop() {
 
 ---
 
-## 🗄️ Database REST Examples
+## 🗄️ Database Examples
 
-### Select with Filters & Ordering
+### Insert
+
+```cpp
+String json = "{\"name\":\"ESP32-01\",\"status\":\"online\"}";
+
+if (supabase.insert("devices", json)) {
+    Serial.println("Data inserted successfully");
+} else {
+    Serial.print("Insert failed: ");
+    Serial.println(supabase.lastErrorMessage());
+}
+```
+
+### Select
+
+```cpp
+// Select all columns
+String allDevices = supabase.select("devices");
+
+// Select specific columns
+String namesOnly = supabase.select("devices", "name,status");
+```
+
+### Update
+
+```cpp
+String updateJson = "{\"status\":\"active\"}";
+
+if (supabase.update("devices", updateJson, "name=eq.ESP32-01")) {
+    Serial.println("Data updated successfully");
+} else {
+    Serial.print("Update failed: ");
+    Serial.println(supabase.lastErrorMessage());
+}
+```
+
+### Remove / Delete
+
+```cpp
+if (supabase.remove("devices", "name=eq.ESP32-01")) {
+    Serial.println("Row deleted successfully");
+} else {
+    Serial.print("Delete failed: ");
+    Serial.println(supabase.lastErrorMessage());
+}
+```
+
+### Fluent Query Builder (Advanced)
+
 ```cpp
 auto result = supabase
-    .from("sensor_data")
-    .select("id,temperature,created_at")
-    .gte("temperature", 25.0)
-    .order("created_at", false) // descending
-    .limit(10)
+    .from("devices")
+    .select("id,name,status")
+    .eq("status", "online")
+    .order("created_at", false)
+    .limit(5)
     .execute();
 
 if (result.ok()) {
@@ -91,127 +157,76 @@ if (result.ok()) {
 }
 ```
 
-### Update Row
-```cpp
-JsonDocument updateDoc;
-updateDoc["status"] = "maintenance";
-
-auto result = supabase
-    .from("devices")
-    .update(updateDoc)
-    .eq("device_id", "ESP32-001")
-    .execute();
-```
-
-### Upsert Row
-```cpp
-JsonDocument doc;
-doc["device_id"] = "ESP32-001";
-doc["status"] = "online";
-
-auto result = supabase
-    .from("devices")
-    .upsert(doc, "device_id")
-    .execute();
-```
-
-### Remote Procedure Call (RPC)
-```cpp
-JsonDocument args;
-args["device_id"] = "ESP32-001";
-
-auto result = supabase.rpc("get_device_status", args).execute();
-```
-
 ---
 
 ## 🔐 Auth Examples
 
 ```cpp
-// Sign in user with email & password
-auto resp = supabase.auth().signIn("user@example.com", "secretpassword");
-
-if (resp.ok()) {
-    Serial.println("User authenticated!");
-    Serial.print("User ID: ");
-    Serial.println(supabase.auth().session().userId);
+// Sign In
+if (supabase.signIn("user@example.com", "userpassword")) {
+    Serial.println("User authenticated");
+} else {
+    Serial.print("Sign in failed: ");
+    Serial.println(supabase.lastErrorMessage());
 }
-```
 
-Persist sessions across reboot using ESP32 NVS (Preferences):
-```cpp
-supabase.auth().setStorage(new PreferencesSessionStorage("supabase"));
-```
-
----
-
-## 📁 Storage Examples
-
-### Upload File
-```cpp
-String payload = "{\"log\": \"system initialized\"}";
-auto resp = supabase.storage().from("logs").upload("esp32/boot.json", payload, "application/json", true);
-```
-
-### Signed URL
-```cpp
-String signedUrl = supabase.storage().from("private_bucket").createSignedUrl("firmware/v1.0.bin", 3600);
-Serial.println("Download link valid for 1 hour: " + signedUrl);
+// Sign Out
+supabase.signOut();
 ```
 
 ---
 
-## 📡 Realtime Examples (Broadcast & Postgres Changes)
+## 📖 API Reference
 
-```cpp
-auto channel = supabase.realtime().channel("room-1");
+### Initialization & Status
 
-// Listen for broadcast messages
-channel.onBroadcast("robot_command", [](const JsonObjectConst& payload) {
-    Serial.print("Command received: ");
-    Serial.println(payload["command"].as<String>());
-});
+- `bool begin(ssid, password, supabaseUrl, apiKey, wifiTimeoutMs = 15000)`: Connects WiFi and initializes Supabase client.
+- `bool begin(supabaseUrl, apiKey)`: Initializes Supabase client when WiFi is already connected.
+- `bool connected()`: Returns `true` if WiFi is connected and credentials are configured.
+- `bool wifiConnected()`: Returns `true` if ESP32 has an active WiFi connection.
 
-// Subscribe to database INSERTs
-channel.onPostgresChange(SupabaseChangeEvent::Insert, "public", "telemetry", [](const SupabasePostgresChange& change) {
-    Serial.print("New telemetry row inserted: ");
-    Serial.println(change.record["temperature"].as<float>());
-});
+### REST Operations
 
-channel.join();
+- `String select(table, columns = "*")`: Fetches rows from the given table.
+- `bool insert(table, json)`: Inserts a JSON row into table.
+- `bool update(table, json, filter)`: Updates rows matching filter (e.g. `"id=eq.1"`).
+- `bool remove(table, filter)`: Deletes rows matching filter.
 
-void loop() {
-    supabase.realtime().loop(); // MUST be called in loop()
-}
-```
+### Authentication
 
----
+- `bool signUp(email, password)`: Registers a new user with email and password.
+- `bool signIn(email, password)`: Authenticates user with email and password.
+- `bool signOut()`: Signs out the current user session.
 
-## 🛡️ Row Level Security (RLS) & Security Guidelines
+### Error Handling
 
-> **IMPORTANT:** ESP32 firmware can be extracted from physical flash memory.
-
-- **Never** embed a `service_role` or `sb_secret_*` key in your firmware.
-- Use only `sb_publishable_...` or legacy `anon` public API keys.
-- Enforce access controls using PostgreSQL **Row Level Security (RLS)** in Supabase Console.
-
-Example RLS SQL:
-```sql
-alter table telemetry enable row level security;
-
-create policy "Authenticated users insert telemetry"
-on telemetry for insert to authenticated
-with check ((select auth.uid()) = user_id);
-```
+- `int lastError()`: Returns numeric error code.
+- `String lastErrorMessage()`: Returns descriptive error string (e.g., `"WiFi connection timeout"`, `"HTTP 401 Unauthorized"`, `"HTTP 404 Not Found"`).
+- `int lastStatusCode()`: Returns HTTP status code (e.g., `200`, `401`, `404`, `500`).
 
 ---
 
-## ⚠️ Memory Considerations & TLS
+## 🛡️ Security & Best Practices
 
-- **Default Max Response Size:** 16 KB (configurable via `supabase.setMaxResponseSize(bytes)`).
-- **HTTPS/TLS:** HTTPS and WSS connections are enforced. Development mode `supabase.setInsecureTLS(true)` bypasses certificate verification for test environments.
+- **Never commit credentials to GitHub:** Never push WiFi passwords, Supabase URLs, or keys to public repositories.
+- **Use Anonymous Key (`anon`) only:** The Supabase anonymous key is intended for client devices when Row Level Security (RLS) is configured correctly.
+- **NEVER embed Service-Role Keys:** `service_role` keys bypass RLS and grant full administrative access. Storing them on firmware is a high security risk.
+- **Configure Row Level Security (RLS):** Always configure RLS policies in your Supabase project console for all tables accessed by ESP32 devices.
+
+---
+
+## ❓ Troubleshooting
+
+| Issue | Cause & Solution |
+| :--- | :--- |
+| `"WiFi connection timeout"` | Check SSID and WiFi password. Ensure 2.4 GHz WiFi network is used (ESP32 does not support 5 GHz). |
+| `"HTTP 401 Unauthorized"` | Invalid API key or missing JWT token. Verify `SUPABASE_KEY`. |
+| `"HTTP 404 Not Found"` | Table name or endpoint URL is incorrect. |
+| `"HTTP 500 Server Error"` | Database constraint violation or invalid payload structure. |
+| Build Errors | Ensure `ArduinoJson` library is installed via Arduino Library Manager. |
 
 ---
 
 ## 📄 License
-Released under the [MIT License](LICENSE).
+
+This library is licensed under the [MIT License](LICENSE).

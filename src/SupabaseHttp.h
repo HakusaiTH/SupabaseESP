@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SUPABASE_HTTP_H
 #define SUPABASE_HTTP_H
 

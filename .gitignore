@@ -1,0 +1,16 @@
+# Arduino / PlatformIO
+.pio/
+.vscode/
+*.bin
+*.elf
+*.hex
+
+# Build directories
+build/
+bin/
+
+# OS / Editor temporary files
+.DS_Store
+Thumbs.db
+*.swp
+*~

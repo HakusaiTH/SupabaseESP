@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SUPABASE_SESSION_H
 #define SUPABASE_SESSION_H
 

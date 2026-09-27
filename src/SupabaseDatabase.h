@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SUPABASE_DATABASE_H
 #define SUPABASE_DATABASE_H
 

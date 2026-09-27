@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SUPABASE_AUTH_H
 #define SUPABASE_AUTH_H
 

@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SUPABASE_ERROR_H
 #define SUPABASE_ERROR_H
 

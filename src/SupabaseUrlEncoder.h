@@ -1,3 +1,4 @@
+#pragma once
 #ifndef SUPABASE_URL_ENCODER_H
 #define SUPABASE_URL_ENCODER_H
 
